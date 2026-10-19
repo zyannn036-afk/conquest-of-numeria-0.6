@@ -1,0 +1,206 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, viewport-fit=cover"
+    />
+    <title>Numeria Quest — Prototipe Battle</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400;600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div id="app">
+      <canvas id="c" width="1280" height="720"></canvas>
+
+      <!-- HUD -->
+      <div class="hud">
+        <div class="hb pl">
+          <small id="pn">Penjaga Angka</small>
+          <div class="bar hp"><i id="php"></i></div>
+          <div class="bar fp"><i id="pfp"></i></div>
+          <div
+            class="bar ult"
+            title="Energi ulti (tersimpan antar pertempuran)"
+          >
+            <i id="pult"></i>
+          </div>
+          <small id="cb"></small>
+        </div>
+        <div class="hb mid">
+          <small class="ttl"
+            >Numeria Quest · <span id="chp">RPG · Chapter 1</span></small
+          >
+          <small id="en"></small>
+          <div class="bar hp"><i id="ehp"></i></div>
+          <small id="ch"></small>
+        </div>
+      </div>
+
+      <!-- Menu: Pengaturan, lalu Misi di bawahnya -->
+      <nav class="menu" aria-label="Menu">
+        <button class="b g" id="bset" type="button">⚙ Pengaturan</button>
+        <button class="b g" id="bmis" type="button">☰ Misi</button>
+      </nav>
+
+      <!-- Kontrol sentuh (muncul bila kontroler = layar sentuh) -->
+      <div id="pad" class="off">
+        <div class="dp" id="dpad" aria-label="Arah">
+          <span></span><button class="b" data-d="0,-1" type="button">▲</button
+          ><span></span> <button class="b" data-d="-1,0" type="button">◀</button
+          ><span></span><button class="b" data-d="1,0" type="button">▶</button>
+          <span></span><button class="b" data-d="0,1" type="button">▼</button
+          ><span></span>
+        </div>
+        <div class="ab">
+          <button class="b" id="pb" type="button">Tas</button>
+          <button class="b" id="pa" type="button">A</button>
+        </div>
+      </div>
+
+      <!-- Gerak maju/mundur saat battle (layar sentuh) -->
+      <div id="bmv" aria-label="Gerak maju mundur">
+        <button class="b" data-m="-1" type="button" aria-label="Mundur">
+          ◀
+        </button>
+        <button class="b" data-m="1" type="button" aria-label="Maju">▶</button>
+        <button class="b" id="bjp" type="button" aria-label="Lompat (2x)">
+          ▲
+        </button>
+      </div>
+
+      <!-- Dialog & perintah -->
+      <div class="dock">
+        <div class="card pi"><b>Pi</b><span id="pi"></span></div>
+        <div id="ui"></div>
+      </div>
+
+      <!-- Pad aksi battle (Serang Biasa besar + skill melingkar), diisi script.js -->
+      <div id="sk" hidden></div>
+
+      <!-- Overlay Pengaturan & Misi -->
+      <div id="ov" hidden>
+        <section
+          class="modal"
+          id="mset"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="tset"
+          hidden
+        >
+          <h2 id="tset">Pengaturan</h2>
+          <fieldset>
+            <legend>Suara</legend>
+            <label class="sw"
+              ><input type="checkbox" id="snd" checked /> Efek suara</label
+            >
+            <label class="sw"
+              ><input type="checkbox" id="mus" checked /> Musik</label
+            >
+            <label class="sw" hidden
+              ><input type="checkbox" id="tmr" checked /> Timer soal</label
+            >
+          </fieldset>
+          <fieldset>
+            <legend>Kontroler</legend>
+            <label class="sw"
+              ><input type="radio" name="ctl" value="auto" checked />
+              Otomatis</label
+            >
+            <label class="sw"
+              ><input type="radio" name="ctl" value="kbd" /> Keyboard
+              (laptop)</label
+            >
+            <label class="sw"
+              ><input type="radio" name="ctl" value="touch" /> Layar sentuh
+              (Android)</label
+            >
+            <div class="qm" id="ctlnote"></div>
+          </fieldset>
+          <div class="row end">
+            <button class="b g" id="bfs" type="button">Layar penuh</button>
+            <button class="b" data-close type="button">Tutup</button>
+          </div>
+        </section>
+        <section
+          class="modal"
+          id="mmis"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="tmis"
+          hidden
+        >
+          <h2 id="tmis">Misi</h2>
+          <div id="mlist"></div>
+          <div class="row end">
+            <button class="b" data-close type="button">Tutup</button>
+          </div>
+        </section>
+      </div>
+
+      <div id="rot">Putar perangkat ke mode lanskap untuk bermain.</div>
+    </div>
+    <script src="audio.js"></script>
+    <script src="bgm.js"></script>
+    <script src="ui.js"></script>
+    <script src="script.js"></script>
+    <script src="jobs.js"></script>
+    <script src="monsters.js"></script>
+    <script src="world.js"></script>
+    <script src="royals.js"></script>
+    <script src="realm.js"></script>
+    <script src="ocean.js"></script>
+    <script src="east.js"></script>
+    <script src="salju.js"></script>
+    <script src="iblis.js"></script>
+    <script src="town.js"></script>
+    <script src="dungeons.js"></script>
+    <script src="party.js"></script>
+    <script src="guildquest.js"></script>
+    <script src="utara.js"></script>
+    <script src="langit_laut.js"></script>
+    <script src="teleport.js"></script>
+    <script src="cerita.js"></script>
+    <script src="istana.js"></script>
+    <script src="karakter.js"></script>
+    <script src="arena.js"></script>
+    <script src="goblin.js"></script>
+    <script src="rubah.js"></script>
+    <script src="kerajaan.js"></script>
+    <script src="kerajaan_beast.js"></script>
+    <script src="serigala.js"></script>
+    <script src="kobra.js"></script>
+    <script src="mumi.js"></script>
+    <script src="kalajengking.js"></script>
+    <script src="bandit.js"></script>
+    <script src="slime.js"></script>
+    <script src="jamur.js"></script>
+    <script src="utara_sprites.js"></script>
+    <script src="monster_utara.js"></script>
+    <script src="ocean_sprites.js"></script>
+    <script src="ocean_monster.js"></script>
+    <script src="monster_pixel.js"></script>
+    <script src="hero_senjata.js"></script>
+    <script src="hero_pixel.js"></script>
+    <script src="hero_excalibur.js"></script>
+    <script src="npc_pixel.js"></script>
+    <script src="npc_sheet.js"></script>
+    <script src="npc_apply.js"></script>
+    <script src="equip_katalog.js"></script>
+    <script src="skill_fx.js"></script>
+    <script src="enemy_ai.js"></script>
+    <script src="duo_lyra_selena.js"></script>
+    <script src="kesulitan.js"></script>
+    <script src="obrolan_party.js"></script>
+    <script src="hud_kecil.js"></script>
+    <script src="sfx_skill.js"></script>
+    <!-- naga.js HARUS paling akhir: ia membungkus spr() untuk ukuran naga di battle (lihat komentar di naga.js) -->
+    <script src="naga.js"></script>
+  </body>
+</html>

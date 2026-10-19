@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="utf-8" />
+    <title>Pratinjau NPC 144x192</title>
+    <style>
+      body {
+        margin: 0;
+        padding: 16px;
+        background: #0a0e1c;
+        color: #dde;
+        font:
+          14px/1.3 system-ui,
+          sans-serif;
+      }
+      h1 {
+        font-size: 18px;
+        margin: 0 0 4px;
+      }
+      p {
+        margin: 0 0 14px;
+        color: #9ab;
+      }
+      section {
+        border: 1px solid #2a3558;
+        border-radius: 8px;
+        padding: 10px;
+        margin-bottom: 12px;
+        background: #0e1428;
+      }
+      h2 {
+        margin: 0 0 8px;
+        font-size: 14px;
+        color: #f0d8b0;
+      }
+      .row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 14px;
+      }
+      .c {
+        text-align: center;
+        font-size: 12px;
+      }
+      canvas {
+        image-rendering: pixelated;
+        display: block;
+        margin: 0 auto 4px;
+      }
+      .v {
+        display: flex;
+        gap: 2px;
+        margin-top: 4px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>NPC 144×192 — pratinjau &amp; variasi</h1>
+    <p>
+      Besar = preset (berkedip antar 2 frame). Kecil di bawahnya = 4 variasi
+      acak dari peran yang sama.
+    </p>
+    <div id="o"></div>
+    <script src="npc_pixel.js"></script>
+    <script>
+      const o = document.getElementById("o"),
+        groups = {},
+        cvs = [];
+      for (const [k, p] of Object.entries(NPCPX.PRESETS))
+        (groups[p.group] = groups[p.group] || []).push(k);
+      for (const [g, ks] of Object.entries(groups)) {
+        const s = document.createElement("section");
+        s.innerHTML = "<h2>" + g + "</h2>";
+        const r = document.createElement("div");
+        r.className = "row";
+        ks.forEach((k) => {
+          const c = document.createElement("div");
+          c.className = "c";
+          const cv = document.createElement("canvas");
+          cv.width = NPCPX.W * 2;
+          cv.height = NPCPX.H * 2;
+          cv.dataset.k = k;
+          cvs.push(cv);
+          c.appendChild(cv);
+          c.append(NPCPX.PRESETS[k].label);
+          const v = document.createElement("div");
+          v.className = "v";
+          for (let i = 1; i <= 4; i++) {
+            const m = document.createElement("canvas");
+            m.width = NPCPX.W / 2;
+            m.height = NPCPX.H / 2;
+            const x = m.getContext("2d");
+            x.imageSmoothingEnabled = true;
+            x.imageSmoothingQuality = "high";
+            x.drawImage(NPCPX.canvas(NPCPX.vary(k, i)), 0, 0, m.width, m.height);
+            v.appendChild(m);
+          }
+          c.appendChild(v);
+          r.appendChild(c);
+        });
+        s.appendChild(r);
+        o.appendChild(s);
+      }
+      {
+        const s = document.createElement("section");
+        s.innerHTML =
+          "<h2>Perlengkapan per Rank (E &rarr; SSS), item sama dengan yang bisa dipakai MC</h2>";
+        const r = document.createElement("div");
+        r.className = "row";
+        ["pedangm", "tankw", "tombakm"].forEach((k) => {
+          const w = document.createElement("div");
+          w.className = "row";
+          NPCPX.RK.forEach((rk, i) => {
+            const c = document.createElement("div");
+            c.className = "c";
+            const cv = document.createElement("canvas");
+            cv.width = NPCPX.W;
+            cv.height = NPCPX.H;
+            cv.getContext("2d").drawImage(
+              NPCPX.canvas(NPCPX.dress(k, i)),
+              0,
+              0,
+            );
+            c.appendChild(cv);
+            c.append("Rank " + rk);
+            w.appendChild(c);
+          });
+          r.appendChild(w);
+        });
+        s.appendChild(r);
+        o.appendChild(s);
+      }
+      function tick(t) {
+        const f = Math.floor(t / 500) % 2;
+        cvs.forEach((cv) => {
+          const x = cv.getContext("2d");
+          x.clearRect(0, 0, cv.width, cv.height);
+          NPCPX.draw(x, cv.dataset.k, 0, 0, 2, false, f);
+        });
+        requestAnimationFrame(tick);
+      }
+      requestAnimationFrame(tick);
+    </script>
+  </body>
+</html>

@@ -1,0 +1,1017 @@
+:root {
+  --bg: #e8e5fb;
+  --panel: #fff;
+  --panel-a: rgba(255, 255, 255, 0.93);
+  --line: #b9b3ea;
+  --ink: #1d1a3d;
+  --muted: #5d5890;
+  --mint: #0f9d74;
+  --amber: #b87800;
+  --rose: #d2284d;
+  --mana: #2a7fe0;
+  --btn: #4b3fd1;
+  --btnink: #fff;
+  --u: clamp(12px, 2vh, 19px); /* satuan teks mengikuti tinggi layar */
+  box-sizing: border-box;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0f0d24;
+    --panel: #1f1b40;
+    --panel-a: rgba(31, 27, 64, 0.93);
+    --line: #4b4690;
+    --ink: #eceaff;
+    --muted: #a9a4de;
+    --mint: #7ef0c8;
+    --amber: #ffd166;
+    --rose: #ff6b8b;
+  --mana: #6fb8ff;
+    --btn: #7ef0c8;
+    --btnink: #10202a;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0f0d24;
+  --panel: #1f1b40;
+  --panel-a: rgba(31, 27, 64, 0.93);
+  --line: #4b4690;
+  --ink: #eceaff;
+  --muted: #a9a4de;
+  --mint: #7ef0c8;
+  --amber: #ffd166;
+  --rose: #ff6b8b;
+  --mana: #6fb8ff;
+  --btn: #7ef0c8;
+  --btnink: #10202a;
+}
+[hidden] {
+  display: none !important;
+}
+*,
+*:before,
+*:after {
+  box-sizing: inherit;
+}
+html,
+body {
+  height: 100%;
+  margin: 0;
+  overflow: hidden;
+  background: #05040f;
+  overscroll-behavior: none;
+}
+body {
+  color: var(--ink);
+  font-family: "Pixelify Sans", "Courier New", monospace;
+  font-size: var(--u);
+  line-height: 1.4;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* ---- layar penuh: kanvas 480x270 memenuhi jendela, tanpa bingkai ---- */
+#app {
+  position: fixed;
+  inset: 0;
+  --sl: env(safe-area-inset-left, 0px);
+  --sr: env(safe-area-inset-right, 0px);
+  --st: env(safe-area-inset-top, 0px);
+  --sb: env(safe-area-inset-bottom, 0px);
+}
+canvas#c {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  image-rendering: pixelated;
+  background: #000;
+}
+
+/* sudut bertakik ala pixel art */
+.card,
+.b,
+.hb,
+.modal {
+  --n: 4px;
+  clip-path: polygon(
+    0 var(--n),
+    var(--n) var(--n),
+    var(--n) 0,
+    calc(100% - var(--n)) 0,
+    calc(100% - var(--n)) var(--n),
+    100% var(--n),
+    100% calc(100% - var(--n)),
+    calc(100% - var(--n)) calc(100% - var(--n)),
+    calc(100% - var(--n)) 100%,
+    var(--n) 100%,
+    var(--n) calc(100% - var(--n)),
+    0 calc(100% - var(--n))
+  );
+}
+
+/* ---- HUD ---- */
+.hud {
+  position: absolute;
+  inset: calc(8px + var(--st)) calc(8px + var(--sr)) auto calc(8px + var(--sl));
+  display: flex;
+  justify-content: space-between;
+  pointer-events: none;
+}
+.hb {
+  width: min(22em, 36vw);
+  background: var(--panel-a);
+  border: 3px solid var(--line);
+  padding: 0.35em 0.6em 0.4em;
+}
+.hb.mid {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(20em, 30vw);
+  text-align: center;
+}
+.hb small {
+  display: block;
+  font-size: 0.8em;
+  color: var(--muted);
+  margin-bottom: 2px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.hb .ttl {
+  font-size: 0.72em;
+}
+.bar {
+  position: relative;
+  height: 0.7em;
+  background: rgba(0, 0, 0, 0.45);
+  margin-bottom: 3px;
+  overflow: hidden;
+  box-shadow: inset 0 0 0 2px rgba(0, 0, 0, 0.4);
+}
+.bar:after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    90deg,
+    transparent 0 7px,
+    rgba(0, 0, 0, 0.5) 7px 9px
+  );
+}
+.bar i {
+  display: block;
+  height: 100%;
+  width: 100%;
+  transition: width 0.3s;
+  box-shadow: inset 0 3px 0 rgba(255, 255, 255, 0.3);
+}
+.hp i {
+  background: var(--rose);
+}
+.fp i {
+  background: var(--mana);
+}
+
+/* ---- menu: Pengaturan, Misi di bawahnya ---- */
+.menu {
+  position: absolute;
+  left: calc(8px + var(--sl));
+  top: calc(8px + var(--st) + 5.6em);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: min(11em, 20vw);
+}
+.menu .b {
+  font-size: 0.85em;
+  padding: 0.5em 0.7em;
+  text-align: left;
+  background: var(--panel-a);
+}
+
+/* ---- dialog & perintah di bawah layar ---- */
+.dock {
+  position: absolute;
+  left: 50%;
+  bottom: calc(8px + var(--sb));
+  transform: translateX(-50%);
+  width: min(54em, calc(100% - 16px - var(--sl) - var(--sr)));
+  max-height: 58vh;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  pointer-events: none;
+}
+.dock > * {
+  pointer-events: auto;
+}
+.card {
+  background: var(--panel-a);
+  border: 4px solid var(--line);
+  padding: 0.6em 0.8em;
+  box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.06);
+}
+#ui:empty {
+  display: none;
+}
+#ui .card {
+  max-height: 44vh;
+  overflow: auto;
+  overscroll-behavior: contain;
+}
+.pi {
+  border-left: 8px solid var(--mint);
+  font-size: 0.95em;
+}
+.pi b {
+  color: var(--mint);
+  margin-right: 8px;
+}
+.hint {
+  display: none; /* papan petunjuk kontrol di bawah layar disembunyikan. Hapus baris ini untuk memunculkannya lagi */
+  padding: 0.3em 0.7em;
+  border-width: 3px;
+}
+.qm {
+  font-size: 0.8em;
+  color: var(--muted);
+}
+.qt {
+  font-size: 1.6em;
+  margin: 0.15em 0 0.5em;
+  overflow-wrap: anywhere;
+  letter-spacing: 0.5px;
+}
+.tm {
+  height: 8px;
+  background: rgba(0, 0, 0, 0.45);
+  margin: 0.6em 0;
+  box-shadow: inset 0 0 0 2px rgba(0, 0, 0, 0.4);
+}
+.tm i {
+  display: block;
+  height: 100%;
+  width: 100%;
+  background: var(--mint);
+}
+.row {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.ar {
+  display: flex;
+  gap: 8px;
+  align-items: stretch;
+}
+.ar .in {
+  flex: 1;
+  margin-bottom: 0;
+  min-width: 0;
+}
+.hr {
+  align-items: center;
+}
+.hr .qm {
+  flex: 1;
+}
+.row.end {
+  justify-content: flex-end;
+  margin-top: 0.8em;
+}
+.b {
+  font: inherit;
+  background: var(--btn);
+  color: var(--btnink);
+  border: 0;
+  padding: 0.55em 1em;
+  cursor: pointer;
+  touch-action: manipulation;
+  box-shadow:
+    inset 0 -4px 0 rgba(0, 0, 0, 0.3),
+    inset 0 3px 0 rgba(255, 255, 255, 0.35);
+  transition: filter 0.1s;
+}
+.b:hover:not(:disabled) {
+  filter: brightness(1.12);
+}
+.b:active {
+  transform: translateY(2px);
+}
+.b:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+.b.g {
+  background: transparent;
+  color: var(--ink);
+  box-shadow: inset 0 0 0 2px var(--line);
+}
+.menu .b.g {
+  background: var(--panel-a);
+}
+.opts {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+}
+.opts .b {
+  font-size: 1.25em;
+  text-align: left;
+}
+.in {
+  font: inherit;
+  font-size: 1.5em;
+  width: 100%;
+  padding: 0.3em 0.6em;
+  border: 4px solid var(--line);
+  background: rgba(0, 0, 0, 0.35);
+  color: var(--ink);
+  margin-bottom: 8px;
+  border-radius: 0;
+}
+:is(.b, .in, input):focus-visible {
+  outline: 3px solid var(--amber);
+  outline-offset: 2px;
+}
+.ok {
+  color: var(--mint);
+}
+.no {
+  color: var(--rose);
+}
+.irow {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  padding: 6px 0;
+  border-bottom: 2px solid var(--line);
+}
+.irow > div {
+  flex: 1;
+}
+.irow .ic {
+  font-size: 1.4em;
+  width: 28px;
+  text-align: center;
+}
+.irow small {
+  color: var(--muted);
+}
+.ihd {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+.pv {
+  width: 84px;
+  height: 84px;
+  background: var(--bg);
+  border: 3px solid var(--line);
+  image-rendering: pixelated;
+}
+
+/* ---- overlay Pengaturan & Misi ---- */
+#ov {
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px;
+  background: rgba(8, 6, 26, 0.62);
+}
+.modal {
+  width: min(34em, 100%);
+  max-height: 100%;
+  overflow: auto;
+  background: var(--panel);
+  border: 4px solid var(--line);
+  padding: 0.9em 1.1em 1em;
+}
+.modal h2 {
+  margin: 0 0 0.5em;
+  font-size: 1.4em;
+  font-weight: 600;
+  letter-spacing: 1px;
+  text-shadow: 3px 3px 0 var(--line);
+}
+fieldset {
+  border: 3px solid var(--line);
+  margin: 0 0 0.7em;
+  padding: 0.4em 0.8em 0.6em;
+}
+legend {
+  padding: 0 0.4em;
+  color: var(--muted);
+  font-size: 0.85em;
+}
+.sw {
+  display: flex;
+  align-items: center;
+  gap: 0.6em;
+  padding: 0.35em 0;
+  cursor: pointer;
+}
+.sw input {
+  width: 1.2em;
+  height: 1.2em;
+  accent-color: var(--btn);
+  margin: 0;
+}
+.mt {
+  font-size: 0.8em;
+  text-align: right;
+  max-width: 11em;
+}
+.mt.wip {
+  color: var(--amber);
+}
+
+/* ---- kontrol sentuh ---- */
+#pad {
+  position: absolute;
+  inset: auto calc(14px + var(--sr)) calc(14px + var(--sb))
+    calc(14px + var(--sl));
+  display: none;
+  justify-content: space-between;
+  align-items: flex-end;
+  pointer-events: none;
+  z-index: 5;
+}
+body[data-ctl="touch"] #pad:not(.off) {
+  display: flex;
+}
+#pad .dp,
+#pad .ab {
+  pointer-events: auto;
+}
+.dp {
+  display: grid;
+  grid-template-columns: repeat(3, 4.2em);
+  grid-auto-rows: 4.2em;
+  gap: 6px;
+  touch-action: none;
+  user-select: none;
+}
+.dp .b,
+.ab .b {
+  padding: 0;
+  font-size: 1.4em;
+  text-align: center;
+  opacity: 0.88;
+  user-select: none;
+  -webkit-user-select: none;
+}
+.ab {
+  display: flex;
+  gap: 12px;
+  align-items: flex-end;
+  touch-action: none;
+}
+.ab .b {
+  width: 4.6em;
+  height: 4.6em;
+}
+.ab #pb {
+  width: 3.4em;
+  height: 3.4em;
+  font-size: 1em;
+  background: var(--panel-a);
+  color: var(--ink);
+}
+
+/* panel dialog menyempit agar tidak menabrak tombol sentuh */
+body[data-ctl="touch"].pad-on .dock {
+  width: min(54em, calc(100% - 2 * (14em + 14px) - var(--sl) - var(--sr)));
+}
+
+/* ---- peringatan potret ---- */
+#rot {
+  display: none;
+  position: absolute;
+  inset: 0;
+  z-index: 20;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 24px;
+  background: #05040f;
+  color: var(--ink);
+  font-size: 1.3em;
+}
+@media (orientation: portrait) and (max-width: 700px) {
+  #rot {
+    display: flex;
+  }
+}
+
+/* ---- layar sempit / pendek ---- */
+@media (max-width: 900px), (max-height: 520px) {
+  .hb {
+    width: 30vw;
+  }
+  .hb.mid {
+    width: 28vw;
+  }
+  .opts {
+    grid-template-columns: 1fr 1fr;
+  }
+  .qt {
+    font-size: 1.35em;
+  }
+  .menu {
+    top: calc(8px + var(--st) + 5.2em);
+  }
+}
+@media (max-height: 520px) {
+  :root {
+    --u: 12px;
+  }
+  .hb .ttl {
+    display: none;
+  }
+  .dock {
+    max-height: 70vh;
+  }
+  #ui .card {
+    max-height: 56vh;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .bar i {
+    transition: none;
+  }
+}
+
+/* saat soal tampil, baris Pi disembunyikan agar arena battle tetap terlihat */
+.dock:has(.qt) .pi {
+  display: none;
+}
+
+/* ---- pad aksi battle ala MOBA: Serang Biasa besar + skill melingkar dengan ring cooldown ---- */
+#sk {
+  position: absolute;
+  right: calc(10px + var(--sr));
+  bottom: calc(10px + var(--sb));
+  width: 20em;
+  height: 16.4em;
+  z-index: 4;
+  pointer-events: none;
+}
+#sk[hidden] {
+  display: none;
+}
+body.sk-on .dock {
+  width: min(54em, max(18em, calc(100% - 2 * (20.5em + 10px) - var(--sl) - var(--sr))));
+}
+#sk .sb {
+  position: absolute;
+  pointer-events: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  margin: 0;
+  font: inherit;
+  color: var(--ic, var(--ink));
+  background: var(--panel);
+  border: 3px solid var(--amber);
+  border-radius: 50%;
+  cursor: pointer;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  box-shadow:
+    inset 0 0 0 2px rgba(0, 0, 0, 0.25),
+    0 3px 0 rgba(0, 0, 0, 0.45);
+}
+#sk .sb:active:not(.off) {
+  transform: translateY(2px);
+}
+#sk .sb:focus-visible {
+  outline: 3px solid var(--amber);
+  outline-offset: 3px;
+}
+#sk .sb svg {
+  position: relative;
+  z-index: 1;
+  width: 58%;
+  height: 58%;
+  pointer-events: none;
+}
+/* cincin cooldown: bagian gelap menyusut searah jarum jam */
+#sk .sb::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: conic-gradient(rgba(5, 4, 15, 0.74) calc(var(--cd, 0) * 360deg), transparent 0);
+  pointer-events: none;
+}
+#sk .sb.off {
+  filter: grayscale(0.6) brightness(0.72);
+  cursor: not-allowed;
+}
+#sk .sb.big {
+  border: 0;
+  border-radius: 0;
+  background: var(--amber);
+  box-shadow: none;
+  clip-path: polygon(50% 0, 100% 16%, 100% 74%, 50% 100%, 0 74%, 0 16%);
+}
+#sk .sb.big::before {
+  content: "";
+  position: absolute;
+  inset: 4px;
+  background: var(--panel);
+  clip-path: polygon(50% 0, 100% 16%, 100% 74%, 50% 100%, 0 74%, 0 16%);
+}
+#sk .sb.big::after {
+  display: none;
+}
+#sk .sb.big svg {
+  width: 56%;
+  height: 56%;
+}
+#sk .kk,
+#sk .mc,
+#sk .cdn,
+#sk .lk {
+  position: absolute;
+  z-index: 2;
+  pointer-events: none;
+  font-style: normal;
+}
+#sk .kk {
+  left: -0.2em;
+  top: -0.3em;
+  padding: 0 0.3em;
+  font-size: 0.65em;
+  background: var(--panel);
+  border: 2px solid var(--line);
+  color: var(--ink);
+}
+body[data-ctl="touch"] #sk .kk {
+  display: none;
+}
+#sk .mc {
+  right: -0.35em;
+  bottom: -0.35em;
+  min-width: 1.5em;
+  padding: 0 0.25em;
+  font-size: 0.7em;
+  line-height: 1.5;
+  text-align: center;
+  color: #fff;
+  background: var(--mana);
+  border: 2px solid var(--panel);
+  border-radius: 1em;
+}
+#sk .pot .mc {
+  background: var(--rose);
+}
+#sk .cdn {
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5em;
+  color: #fff;
+  text-shadow: 2px 2px 0 #000;
+}
+#sk .lk {
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75em;
+  color: #fff;
+  background: rgba(5, 4, 15, 0.62);
+  border-radius: 50%;
+}
+#sk .ski {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  padding: 0.3em 0.6em;
+  font-size: 0.8em;
+  line-height: 1.3;
+  text-align: right;
+  color: var(--ink);
+  background: var(--panel-a);
+  border: 3px solid var(--line);
+  pointer-events: none;
+}
+#sk .ski b {
+  color: var(--amber);
+}
+#sk [data-a="pow"] { --ic: #ff9a3d; }
+#sk [data-a="pen"] { --ic: #7cf0ff; }
+#sk [data-a="crt"] { --ic: #ff6b8b; }
+#sk [data-a="heal"] { --ic: var(--mint); }
+#sk [data-a="pot"] { --ic: var(--rose); }
+#sk [data-a="fpot"] { --ic: var(--mana); }
+@media (prefers-reduced-motion: reduce) {
+  #sk .sb:active:not(.off) {
+    transform: none;
+  }
+}
+
+/* =====================================================================
+   Tampilan battle ala hack & slash (aktif saat <body class="bt">)
+   ===================================================================== */
+.av,
+#trk,
+#bpz {
+  display: none;
+}
+body.bt .menu,
+body.bt .hb.mid {
+  display: none;
+}
+body.bt .av {
+  display: flex;
+}
+body.bt #trk,
+body.bt #bpz {
+  display: block;
+}
+
+/* lencana pemain: lingkaran level + bar HP/Mana tipis */
+.av {
+  grid-column: 1;
+  grid-row: 1 / span 4;
+  width: 3.4em;
+  height: 3.4em;
+  border-radius: 50%;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  font-style: normal;
+  color: #fff;
+  background: radial-gradient(circle at 35% 30%, #a86bff, #3a1f7a 70%);
+  border: 3px solid #cba8ff;
+  box-shadow: 0 0 12px rgba(190, 130, 255, 0.8), inset 0 0 0 2px rgba(0, 0, 0, 0.35);
+}
+.av span {
+  font-size: 0.55em;
+  letter-spacing: 1px;
+  opacity: 0.9;
+}
+.av b {
+  font-size: 1.3em;
+}
+body.bt .hb.pl {
+  display: grid;
+  grid-template-columns: 3.4em 1fr;
+  column-gap: 0.6em;
+  align-content: center;
+  width: min(19em, 38vw);
+  background: none;
+  border: 0;
+  padding: 0;
+  clip-path: none;
+  text-shadow: 0 1px 3px #000, 0 0 6px rgba(0, 0, 0, 0.7);
+}
+body.bt .hb.pl > :not(.av) {
+  grid-column: 2;
+}
+body.bt .hb.pl small {
+  color: #fff;
+  font-size: 0.72em;
+}
+body.bt .hb.pl .bar {
+  height: 0.55em;
+  border-radius: 0.3em;
+  box-shadow: 0 0 0 2px rgba(10, 6, 24, 0.7);
+}
+body.bt .hb.pl .bar:after {
+  display: none;
+}
+body.bt .hb.pl .bar i {
+  box-shadow: inset 0 2px 0 rgba(255, 255, 255, 0.3);
+}
+
+/* jalur progres musuh di tengah atas (isi = damage yang sudah diberikan) */
+#trk {
+  position: absolute;
+  top: calc(16px + var(--st));
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(24em, 38vw);
+  height: 0.4em;
+  background: rgba(255, 255, 255, 0.22);
+  border-radius: 1em;
+  box-shadow: 0 0 0 2px rgba(10, 6, 24, 0.55);
+  pointer-events: none;
+}
+#trk i {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 0;
+  border-radius: 1em;
+  background: linear-gradient(90deg, #8a5cff, #ff5ca8);
+  transition: width 0.4s;
+}
+#trk b {
+  position: absolute;
+  top: 50%;
+  width: 1em;
+  height: 1em;
+  margin: -0.5em 0 0 -0.5em;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, #6fb8ff, #1a3a8a);
+  border: 2px solid #cfe8ff;
+  box-shadow: 0 0 6px #6fb8ff;
+}
+#trk b:nth-of-type(1) {
+  left: 0;
+}
+#trk b:nth-of-type(2) {
+  left: 50%;
+}
+#trk b:nth-of-type(3) {
+  left: 100%;
+}
+
+/* tombol jeda */
+#bpz {
+  position: absolute;
+  top: calc(8px + var(--st));
+  right: calc(8px + var(--sr));
+  z-index: 6;
+  width: 2.6em;
+  height: 2.6em;
+  padding: 0;
+  border-radius: 50%;
+  border: 3px solid #5fd0ff;
+  background: radial-gradient(circle, #1d3a6a, #0c1a38);
+  color: #bfe9ff;
+  font: inherit;
+  font-size: 0.8em;
+  letter-spacing: -1px;
+  cursor: pointer;
+  touch-action: manipulation;
+  box-shadow: 0 0 10px rgba(95, 208, 255, 0.6);
+}
+#bpz:active {
+  transform: translateY(2px);
+}
+
+/* ---- pad aksi: lingkaran bercahaya, selalu tampil, tidak hilang saat animasi ---- */
+#sk .sb {
+  background: radial-gradient(circle at 40% 30%, #2b2352, #0f0b26 75%);
+  border: 3px solid var(--ic, #ffd166);
+  box-shadow:
+    0 0 12px color-mix(in srgb, var(--ic, #ffd166) 65%, transparent),
+    inset 0 0 0 2px rgba(0, 0, 0, 0.35),
+    0 3px 0 rgba(0, 0, 0, 0.45);
+}
+#sk [data-a="atk"] {
+  --ic: #e8fbff;
+}
+#sk .sb.big {
+  border: 3px solid #7cf0ff;
+  border-radius: 50%;
+  clip-path: none;
+  background: radial-gradient(circle at 40% 30%, #2a4a8a, #0c1636 70%);
+  box-shadow:
+    0 0 18px rgba(124, 240, 255, 0.75),
+    inset 0 0 0 3px rgba(0, 0, 0, 0.4),
+    0 4px 0 rgba(0, 0, 0, 0.5);
+}
+#sk .sb.big::before {
+  inset: 6px;
+  border-radius: 50%;
+  clip-path: none;
+  background: none;
+  border: 2px dashed rgba(124, 240, 255, 0.55);
+}
+#sk.busy .sb:not(.big) {
+  filter: brightness(0.82);
+}
+#sk.busy .sb.off {
+  filter: grayscale(0.6) brightness(0.65);
+}
+/* perintah diantre saat animasi: berkedip, jalan otomatis di giliran berikutnya */
+#sk .sb.qd {
+  outline: 3px dashed var(--amber);
+  outline-offset: 3px;
+  animation: sbq 0.5s steps(2) infinite;
+}
+@keyframes sbq {
+  50% {
+    outline-color: transparent;
+  }
+}
+/* denyut saat tombol ditekan */
+#sk .sb.fire {
+  animation: sbf 0.35s ease-out;
+}
+@keyframes sbf {
+  0% {
+    transform: scale(1.22);
+    filter: brightness(1.9);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  #sk .sb.fire,
+  #sk .sb.qd {
+    animation: none;
+  }
+  #trk i {
+    transition: none;
+  }
+}
+
+/* jumlah antrean Serang Biasa saat spam klik */
+#sk .qn {
+  position: absolute;
+  z-index: 2;
+  right: -0.2em;
+  top: -0.3em;
+  padding: 0 0.35em;
+  font-size: 0.75em;
+  font-style: normal;
+  color: #10202a;
+  background: var(--amber);
+  border: 2px solid var(--panel);
+  border-radius: 1em;
+  pointer-events: none;
+}
+
+/* panel dialog (termasuk tombol "Mulai battle") selalu di atas pad aksi, tidak tertutup */
+.dock {
+  z-index: 5;
+}
+
+
+/* ---- energi ulti: bar pelangi di HUD + tombol Pedang Pelangi ---- */
+.ult i {
+  background: linear-gradient(90deg, #ff4d6d, #ffb347, #ffe14d, #5fe08a, #4db8ff, #8a6bff, #ff7ad9);
+  width: 0;
+}
+#sk [data-a="ult"].off,
+#sk.busy [data-a="ult"].off {
+  filter: brightness(0.9);
+}
+#sk [data-a="ult"].rdy {
+  border-color: #ff4d6d;
+  box-shadow: 0 0 20px #ff4d6d, inset 0 0 0 2px rgba(0, 0, 0, 0.35), 0 3px 0 rgba(0, 0, 0, 0.45);
+  animation: rbw 1.4s linear infinite;
+}
+@keyframes rbw {
+  to {
+    filter: hue-rotate(360deg);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  #sk [data-a="ult"].rdy {
+    animation: none;
+  }
+}
+
+
+/* ---- tombol gerak maju/mundur saat battle (hanya layar sentuh) ---- */
+#bmv {
+  display: none;
+  position: absolute;
+  left: calc(14px + var(--sl));
+  bottom: calc(14px + var(--sb));
+  gap: 12px;
+  z-index: 4;
+}
+body.bt[data-ctl="touch"] #bmv {
+  display: flex;
+}
+#bmv .b {
+  width: 3.6em;
+  height: 3.6em;
+  padding: 0;
+  border-radius: 50%;
+  font-size: 1.1em;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+}
+#bmv .b:active {
+  transform: translateY(2px);
+  filter: brightness(1.3);
+}
+
+/* tombol lompat (layar sentuh): tap dua kali untuk lompat ganda */
+#bmv #bjp {
+  margin-left: 14px;
+  color: #7cf0ff;
+}
